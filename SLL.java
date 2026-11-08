@@ -2,6 +2,7 @@ package data_structures;
 
 public class SLL{
     Node head;
+    Node tail;
 
     static class Node{
         int data;
@@ -10,66 +11,75 @@ public class SLL{
         Node(int d) {data = d;}
     }
 
-    //adding new node
     public void add(int data){
-        if(head == null) head = new Node(data);
+        if(head == null){ 
+            head = new Node(data);
+            tail = head;
+        }
         else {
-            Node temp = head;
-            while(temp.next != null){
-                temp = temp.next;
-            }
-            temp.next = new Node(data);
+            tail.next = new Node(data);
+            tail = tail.next;
         }
     }
-    // inserting node at middle
-    public void add(int index, int data){
-        //-ve index handling
-        if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
-        //no head 
-        if(head == null) throw new IllegalStateException("oooeeee thats bad, no head and index is "+index+"???");
-        //only head
 
-        if(index == 0){
+    public void add(int index, int data){
+        if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
+        if(head == null) {
+            head = new Node(data);
+            tail = head;
+        }
+        else if(index == 0){
             Node newNode = new Node(data);
             newNode.next = head;
             head = newNode;
-        }
-        else {
-            Node newNode = new Node(data);
-            Node temp = head;
-            int counter = 0;
-            while(counter < index-1 ) {
-                if(temp == null || temp.next == null) 
-                    throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
-                temp = temp.next;
-                counter++;
+            if(tail == null){
+                tail = head;
             }
-            newNode.next = temp.next;
-            temp.next = newNode; 
+            return;
         }
-    }
-
-    //deleting node by index
-    public int delete(int index){
-        if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
-
-        if(head == null) throw new IllegalStateException("List hi empty hai re");
-
+        Node newNode = new Node(data);
         Node temp = head;
         int counter = 0;
-        
+        while(counter < index-1 ) {
+            if(temp == null || temp.next == null) 
+                throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
+            temp = temp.next;
+            counter++;
+        }
+        newNode.next = temp.next;
+        temp.next = newNode;
+        if(newNode.next == null) tail = newNode; 
+    }
+
+    public int delete(int index){
+        if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
+        if(head == null) throw new IllegalStateException("List hi empty hai re");
+
         if(index == 0){
             int data = head.data;
+            if(head == tail){
+                tail = head.next;
+            }
             head = head.next;
             return data;
         }
+
+        Node temp = head;
+        int counter = 0;
         while(counter < index - 1){
             if(temp == null || temp.next == null) throw new NullPointerException("List choti he babu");
             temp = temp.next;
+            counter++;
         }
         //the last check
         if (temp.next == null) {
             throw new IllegalArgumentException("List choti he babu, ye index bhaar hai");
+        }
+        else if(temp.next == tail){ //if deleting ele on last index update tail
+            int deletedNodeData = tail.data;
+            temp.next = null;
+            tail = temp;
+            return deletedNodeData;
         }
         int deletedNodeData = temp.next.data;
         temp.next = temp.next.next;
@@ -81,34 +91,38 @@ public class SLL{
         //-ve index handling
         if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
         //no head 
-        if(head == null) throw new IllegalStateException("oooeeee thats bad, no head and index is "+index+"???");
+        //if(head == null) throw new IllegalStateException("oooeeee thats bad, no head and index is "+index+"???");
 
         Node temp = head;
         int counter = 0;
         while(counter < index ) {
+            if(temp == null) //kya pata chalte chalte null mil jaye...
+                throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
             temp = temp.next;
             counter++;
-            //kya pata chalte chalte null mil jaye...
-            if(temp == null) 
-                throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
+        }
+        // last check
+        if(temp == null){
+            throw new IllegalAccessError("Null value detected");
         }
         temp.data = data;
     }
 
     public int get(int index){
-        //-ve index handling
         if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
-        //no head 
-        if(head == null) throw new IllegalStateException("oooeeee thats bad, no head and index is "+index+"???");
+        //if(head == null) throw new IllegalStateException("oooeeee thats bad, no head and index is "+index+"???");
 
         Node temp = head;
         int counter = 0;
         while(counter < index ) {
+            if(temp == null) //kya pata chalte chalte null mil jaye...
+                throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
             temp = temp.next;
             counter++;
-            //kya pata chalte chalte null mil jaye...
-            if(temp == null) 
-                throw new IllegalArgumentException("aukat nahi hai list ki "+index+" par jane ki");
+        }
+        // last check
+        if(temp == null){
+            throw new IllegalAccessError("Null value detected");
         }
         
         return temp.data;
@@ -120,6 +134,7 @@ public class SLL{
             System.out.print(printNode.data +" -> ");
             printNode = printNode.next;
         }
+        
         System.out.println("null");
     }
 }
