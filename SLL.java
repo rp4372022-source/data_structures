@@ -25,8 +25,11 @@ public class SLL{
     public void add(int index, int data){
         if(index < 0) throw new IllegalStateException("ye index -ve kisne bheja be???");
         if(head == null) {
-            head = new Node(data);
-            tail = head;
+            if(index == 0){
+                head = new Node(data);
+                tail = head;
+            } else 
+                throw new IllegalArgumentException("aukat nahi hai list ki "+index+"th index par jane ki");
         }
         else if(index == 0){
             Node newNode = new Node(data);
@@ -58,7 +61,7 @@ public class SLL{
         if(index == 0){
             int data = head.data;
             if(head == tail){
-                tail = head.next;
+                tail = null;
             }
             head = head.next;
             return data;
