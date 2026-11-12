@@ -22,43 +22,52 @@ public class DLL{
             tail = head;
             return;
         }
-
         tail.next = new Node(data);
         tail.next.prev = tail;
         tail = tail.next;
-        
     }
 
-    public void insert(int index, int data){
+    public void add(int index, int data){
+        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
         
-        // insert at beginning
-        if(index == 0){
-            if(head == null){
-                head = new Node(data);
-            } else {
-                Node newNode = new Node(data);
-                newNode.next = head;
-                head.prev = newNode;
-                head = newNode;
-            }
+        Node insertingNode = new Node(data);
+        if(index == 0 && head == null){
+            head = insertingNode;
+            tail = head;
+            return;
+        }
+        if(index == 0){ //inserting at beginning
+            insertingNode.next = head;
+            head.prev = insertingNode;
+            head = insertingNode;
+            return;
         } 
-        else {
-            Node insertingNode = new Node(data);
-            Node traveller = head;
-            int ptr = 0;
-            while(ptr < index-1){
-                traveller = traveller.next;
-                ptr++;
-            }
+        Node traveller = head;
+        int ptr = 0;
+        while(ptr < index-1){
+            traveller = traveller.next;
+            ptr++;
+            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        }
+        // if ptr == index while loop is skipped 
+        // the last check
+        if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        if(traveller == tail){
+            traveller.next = insertingNode;
+            insertingNode.prev = traveller;
+            tail = insertingNode; 
+        } else {
             insertingNode.next = traveller.next;
             traveller.next.prev = insertingNode;
-
             insertingNode.prev = traveller;
             traveller.next = insertingNode;
         }
     }
 
     public void set(int index, int data){
+        if(index < 0) throw new IllegalAccessError("Invalid index : "+index);
+        if(head == null) throw new IllegalAccessError("List is empty");
+        
         if(index == 0){
             head.data = data;
         } else {
@@ -66,34 +75,51 @@ public class DLL{
             int ptr = 0;
             while(ptr < index){
                 traveller = traveller.next;
+                ptr++;
+                if(traveller == null) throw new IllegalAccessError("Invalid index : "+index);
             }
             traveller.data = data;
         }
     }
 
     public void delete(int index){
-        if(head == null){
-            throw new IllegalAccessError("List empty hai bhai");
-        }
-        else {
-            Node traveller = head;
-            int ptr = 0;
-            while(ptr < index){
-                traveller = traveller.next;
-                ptr++;
+        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        if(head == null) throw new IndexOutOfBoundsException("List is empty");
+        
+        if(index == 0){
+            if(head == tail){
+                head = null;
+                tail = null;
+            } else {
+                head = head.next;
+                head.prev = null;
             }
-            traveller.prev.next = traveller.next;
-            traveller.next.prev = traveller.prev;
+            return;
         }
-    }
-
-    public int get(int index){
-        if(head == null)
-            throw new IllegalAccessError("List empty hai");
         Node traveller = head;
         int ptr = 0;
         while(ptr < index){
             traveller = traveller.next;
+            ptr++;
+            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        }
+        traveller.prev.next = traveller.next;
+        if(traveller == tail) {
+            tail = traveller.prev;
+        } 
+        else traveller.next.prev = traveller.prev;
+    }
+
+    public int get(int index){
+        if(index < 0) throw new IllegalAccessError("Invalid index : "+index);
+        if(head == null) throw new IllegalAccessError("List is empty");
+
+        Node traveller = head;
+        int ptr = 0;
+        while(ptr < index){
+            traveller = traveller.next;
+            ptr++;
+            if(traveller == null) throw new IllegalAccessError("Invalid index : "+index);
         }
         return traveller.data;
     }
