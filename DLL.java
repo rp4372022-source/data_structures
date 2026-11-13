@@ -65,21 +65,17 @@ public class DLL{
     }
 
     public void set(int index, int data){
-        if(index < 0) throw new IllegalAccessError("Invalid index : "+index);
-        if(head == null) throw new IllegalAccessError("List is empty");
-        
-        if(index == 0){
-            head.data = data;
-        } else {
-            Node traveller = head;
-            int ptr = 0;
-            while(ptr < index){
-                traveller = traveller.next;
-                ptr++;
-                if(traveller == null) throw new IllegalAccessError("Invalid index : "+index);
-            }
-            traveller.data = data;
+        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        if(head == null) throw new IndexOutOfBoundsException("List is empty");
+
+        Node traveller = head;
+        int ptr = 0;
+        while(ptr < index){
+            traveller = traveller.next;
+            ptr++;
+            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
         }
+        traveller.data = data;
     }
 
     public void delete(int index){
@@ -111,15 +107,15 @@ public class DLL{
     }
 
     public int get(int index){
-        if(index < 0) throw new IllegalAccessError("Invalid index : "+index);
-        if(head == null) throw new IllegalAccessError("List is empty");
+        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        if(head == null) throw new IndexOutOfBoundsException("List is empty");
 
         Node traveller = head;
         int ptr = 0;
         while(ptr < index){
             traveller = traveller.next;
             ptr++;
-            if(traveller == null) throw new IllegalAccessError("Invalid index : "+index);
+            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
         }
         return traveller.data;
     }
