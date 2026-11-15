@@ -1,144 +1,156 @@
 package data_structures;
 
-public class DLL{
+public class DLL {
     public Node head;
-    public Node tail = head;
+    public Node tail;
+    int size;
 
-    static class Node{
+    static class Node {
         int data;
         Node prev;
         Node next;
 
-        Node(int data){
+        Node(int data) {
             this.data = data;
-            prev = null;
-            next = null;
         }
-    } 
+    }
 
-    public void add(int data){
-        if(head == null){
+    public void add(int data) {
+        if (head == null) {
             head = new Node(data);
             tail = head;
+            size++;
             return;
-        }
-        tail.next = new Node(data);
-        tail.next.prev = tail;
-        tail = tail.next;
-    }
-
-    public void add(int index, int data){
-        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        
-        Node insertingNode = new Node(data);
-        if(index == 0 && head == null){
-            head = insertingNode;
-            tail = head;
-            return;
-        }
-        if(index == 0){ //inserting at beginning
-            insertingNode.next = head;
-            head.prev = insertingNode;
-            head = insertingNode;
-            return;
-        } 
-        Node traveller = head;
-        int ptr = 0;
-        while(ptr < index-1){
-            traveller = traveller.next;
-            ptr++;
-            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        }
-        // if ptr == index while loop is skipped 
-        // the last check
-        if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        if(traveller == tail){
-            traveller.next = insertingNode;
-            insertingNode.prev = traveller;
-            tail = insertingNode; 
         } else {
-            insertingNode.next = traveller.next;
-            traveller.next.prev = insertingNode;
-            insertingNode.prev = traveller;
-            traveller.next = insertingNode;
+            tail.next = new Node(data);
+            tail.next.prev = tail;
+            tail = tail.next;
+            size++;
         }
     }
+    public void add(int index, int data) {
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Invalid index : " + index);
 
-    public void set(int index, int data){
-        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        if(head == null) throw new IndexOutOfBoundsException("List is empty");
-
-        Node traveller = head;
-        int ptr = 0;
-        while(ptr < index){
-            traveller = traveller.next;
-            ptr++;
-            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
+        if (index == 0 && head == null) {
+            add(data);
+            return;
         }
-        traveller.data = data;
-    }
 
-    public void delete(int index){
-        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        if(head == null) throw new IndexOutOfBoundsException("List is empty");
+        Node newNode = new Node(data);
+        if (index == 0) {
+            newNode.next = head;
+            head.prev = newNode;
+            head = newNode;
+            size++;
+            return;
+        }
         
-        if(index == 0){
-            if(head == tail){
+        Node currNode = getNode(index - 1); // we update with node before index node so index-1
+        
+        if (currNode == tail)
+            tail = newNode; //pointing tail to new node
+        else
+            currNode.next.prev = newNode;
+        newNode.next = currNode.next;
+        newNode.prev = currNode.prev;
+        currNode.next = newNode;
+        size++;
+    }
+
+    public void set(int index, int data) {
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Invalid index : " + index);
+        if (head == null)
+            throw new IndexOutOfBoundsException("List is empty");
+
+        Node node = getNode(index);
+        node.data = data;
+    }
+
+    public Node delete(int index) {
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Invalid index : " + index);
+        if (head == null)
+            throw new IndexOutOfBoundsException("List is empty");
+
+        Node deleteNode = null;
+        if (index == 0) {
+            deleteNode = head;
+            if (size == 1) {
                 head = null;
                 tail = null;
             } else {
                 head = head.next;
                 head.prev = null;
             }
-            return;
+            size--;
+            return deleteNode;
+        } else if (index == size - 1) {
+            deleteNode = tail;
+            tail = tail.prev;
+            tail.next = null;
+            size--;
+            return deleteNode;
         }
-        Node traveller = head;
-        int ptr = 0;
-        while(ptr < index){
-            traveller = traveller.next;
-            ptr++;
-            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        }
-        traveller.prev.next = traveller.next;
-        if(traveller == tail) {
-            tail = traveller.prev;
-        } 
-        else traveller.next.prev = traveller.prev;
+        deleteNode = getNode(index);
+        deleteNode.next.prev = deleteNode.prev;
+        deleteNode.prev.next = deleteNode.next;
+        size--;
+        return deleteNode;
     }
 
-    public int get(int index){
-        if(index < 0) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        if(head == null) throw new IndexOutOfBoundsException("List is empty");
+    public int get(int index) {
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Invalid index : " + index);
+        if (head == null)
+            throw new IndexOutOfBoundsException("List is empty");
 
-        Node traveller = head;
-        int ptr = 0;
-        while(ptr < index){
-            traveller = traveller.next;
-            ptr++;
-            if(traveller == null) throw new IndexOutOfBoundsException("Invalid index : "+index);
-        }
-        return traveller.data;
+        Node node = getNode(index);
+        return node.data;
     }
 
-    public void display(){
-        
+    public void display() {
+
         Node traveller = head;
         System.out.print("null = ");
-        while(traveller != null){
+        while (traveller != null) {
             System.out.print(traveller.data + " = ");
             traveller = traveller.next;
         }
         System.out.println("null");
     }
 
-    public void displayReversed(){
-        
+    public void displayReversed() {
         Node traveller = tail;
         System.out.print("null = ");
-        while(traveller != null){
+        while (traveller != null) {
             System.out.print(traveller.data + " = ");
             traveller = traveller.prev;
         }
         System.out.println("null");
+    }
+
+    public Node getNode(int index) {
+        int ptr = 0;
+        Node t;
+        if (index < size / 2) {
+            t = head;
+            while (ptr < index) {
+                t = t.next;
+                ptr++;
+            }
+        } else {
+            ptr = size - 1;
+            t = tail;
+            while (ptr > index) {
+                t = t.prev;
+                ptr--;
+            }
+        }
+
+        if (t == null)
+            throw new IllegalAccessError("No element found");
+        return t;
     }
 }
